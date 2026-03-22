@@ -1,0 +1,15 @@
+node_modules/
+.env
+*.db
+*.db-journal
+dist/
+build/
+.DS_Store
+*.log
+.worktrees/
+.superpowers/
+
+# Artefatos de IA / ferramentas locais (não versionar)
+.claude/
+CLAUDE.md
+docs/superpowers/
