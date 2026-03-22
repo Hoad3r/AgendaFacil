@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Role: CLIENT | PROVIDER | ADMIN
+// Category: SALON | PETSHOP | CLINIC | OTHER
+// AppointmentStatus: PENDING | CONFIRMED | CANCELLED | COMPLETED
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  phone     String?
+  role      String   @default("CLIENT")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  establishments Establishment[]
+  appointments   Appointment[]   @relation("ClientAppointments")
+}
+
+model Establishment {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  category    String   @default("OTHER")
+  address     String?
+  phone       String?
+  ownerId     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  owner        User           @relation(fields: [ownerId], references: [id])
+  services     Service[]
+  workingHours WorkingHours[]
+  appointments Appointment[]
+}
+
+model Service {
+  id              String   @id @default(cuid())
+  name            String
+  description     String?
+  duration        Int
+  price           Float
+  establishmentId String
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+
+  establishment Establishment @relation(fields: [establishmentId], references: [id])
+  appointments  Appointment[]
+}
+
+model WorkingHours {
+  id              String @id @default(cuid())
+  establishmentId String
+  dayOfWeek       Int
+  startTime       String
+  endTime         String
+
+  establishment Establishment @relation(fields: [establishmentId], references: [id])
+}
+
+model Appointment {
+  id              String   @id @default(cuid())
+  clientId        String
+  serviceId       String
+  establishmentId String
+  dateTime        DateTime
+  endTime         DateTime
+  status          String   @default("PENDING")
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  client        User          @relation("ClientAppointments", fields: [clientId], references: [id])
+  service       Service       @relation(fields: [serviceId], references: [id])
+  establishment Establishment @relation(fields: [establishmentId], references: [id])
+}
