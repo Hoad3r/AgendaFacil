@@ -1,0 +1,142 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Better Auth tables ───────────────────────────────────────
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  phone         String?
+  role          String    @default("CLIENT")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  sessions       Session[]
+  accounts       Account[]
+  establishments Establishment[]
+  appointments   Appointment[]   @relation("ClientAppointments")
+  ratings        Rating[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+}
+
+model Verification {
+  id         String    @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
+}
+
+// ─── Business models ──────────────────────────────────────────
+model Establishment {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  category    String   @default("OTHER")
+  address     String?
+  phone       String?
+  coverImage  String?
+  gallery     String[]
+  ownerId     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  owner        User           @relation(fields: [ownerId], references: [id])
+  services     Service[]
+  workingHours WorkingHours[]
+  appointments Appointment[]
+  ratings      Rating[]
+}
+
+model Service {
+  id              String   @id @default(cuid())
+  name            String
+  description     String?
+  duration        Int
+  price           Float
+  establishmentId String
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+
+  establishment Establishment @relation(fields: [establishmentId], references: [id])
+  appointments  Appointment[]
+}
+
+model WorkingHours {
+  id              String @id @default(cuid())
+  establishmentId String
+  dayOfWeek       Int
+  startTime       String
+  endTime         String
+
+  establishment Establishment @relation(fields: [establishmentId], references: [id])
+}
+
+model Appointment {
+  id              String   @id @default(cuid())
+  clientId        String
+  serviceId       String
+  establishmentId String
+  dateTime        DateTime
+  endTime         DateTime
+  status          String   @default("PENDING")
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  client        User          @relation("ClientAppointments", fields: [clientId], references: [id])
+  service       Service       @relation(fields: [serviceId], references: [id])
+  establishment Establishment @relation(fields: [establishmentId], references: [id])
+  rating        Rating?
+}
+
+model Rating {
+  id              String   @id @default(cuid())
+  score           Int
+  comment         String?
+  clientId        String
+  establishmentId String
+  appointmentId   String   @unique
+  createdAt       DateTime @default(now())
+
+  client        User          @relation(fields: [clientId], references: [id])
+  establishment Establishment @relation(fields: [establishmentId], references: [id])
+  appointment   Appointment   @relation(fields: [appointmentId], references: [id])
+}
