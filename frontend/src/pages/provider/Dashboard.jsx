@@ -61,8 +61,9 @@ export default function ProviderDashboard() {
       </div>
 
       {/* Quick links */}
-      <div className="grid sm:grid-cols-3 gap-4 mb-8">
+      <div className="grid sm:grid-cols-4 gap-4 mb-8">
         {[
+          { to: '/provider/establishment', label: 'Estabelecimento', icon: '🏪', desc: 'Editar dados do seu negócio' },
           { to: '/provider/services', label: 'Gerenciar Serviços', icon: '🛠', desc: 'Adicionar ou editar serviços' },
           { to: '/provider/schedule', label: 'Horários', icon: '🕐', desc: 'Configurar dias e horários' },
           { to: '/provider/appointments', label: 'Agendamentos', icon: '📋', desc: 'Ver todos os agendamentos' },

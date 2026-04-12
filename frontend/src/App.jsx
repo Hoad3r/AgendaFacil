@@ -16,6 +16,7 @@ import ProviderDashboard from './pages/provider/Dashboard';
 import ProviderServices from './pages/provider/Services';
 import ProviderSchedule from './pages/provider/Schedule';
 import ProviderAppointments from './pages/provider/Appointments';
+import ProviderEstablishment from './pages/provider/Establishment';
 
 export default function App() {
   return (
@@ -76,6 +77,14 @@ export default function App() {
                 element={
                   <ProtectedRoute roles={['PROVIDER', 'ADMIN']}>
                     <ProviderAppointments />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/provider/establishment"
+                element={
+                  <ProtectedRoute roles={['PROVIDER', 'ADMIN']}>
+                    <ProviderEstablishment />
                   </ProtectedRoute>
                 }
               />

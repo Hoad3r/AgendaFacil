@@ -20,6 +20,7 @@ export default function Navbar() {
 
   const providerLinks = [
     { to: '/provider/dashboard', label: 'Dashboard' },
+    { to: '/provider/establishment', label: 'Estabelecimento' },
     { to: '/provider/services', label: 'Serviços' },
     { to: '/provider/schedule', label: 'Horários' },
     { to: '/provider/appointments', label: 'Agendamentos' },
