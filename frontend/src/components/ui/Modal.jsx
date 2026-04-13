@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { X } from 'lucide-react';
 
 export default function Modal({ isOpen, onClose, title, children, size = 'md' }) {
   useEffect(() => {
@@ -26,9 +27,9 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md' })
           <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-2xl leading-none transition-colors"
+            className="text-gray-400 hover:text-gray-600 transition-colors"
           >
-            ×
+            <X className="w-5 h-5" />
           </button>
         </div>
         <div className="px-6 py-4">{children}</div>
