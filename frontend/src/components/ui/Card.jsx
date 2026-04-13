@@ -1,8 +1,8 @@
 const accentMap = {
-  indigo: 'border-l-4 border-indigo-500',
-  amber: 'border-l-4 border-amber-500',
-  emerald: 'border-l-4 border-emerald-500',
-  blue: 'border-l-4 border-blue-500',
+  indigo:  'border-l-4 border-l-indigo-500',
+  amber:   'border-l-4 border-l-amber-500',
+  emerald: 'border-l-4 border-l-emerald-500',
+  blue:    'border-l-4 border-l-blue-500',
 };
 
 export default function Card({ children, className = '', onClick, accent }) {
