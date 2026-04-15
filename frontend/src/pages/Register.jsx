@@ -5,6 +5,7 @@ import { useToast } from '../contexts/ToastContext';
 import api from '../services/api';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
+import { CalendarCheck, User, Store, Mail, Phone, Lock } from 'lucide-react';
 
 export default function Register() {
   const { login } = useAuth();
@@ -33,38 +34,62 @@ export default function Register() {
   }
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4 py-8">
-      <div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
-          <div className="text-center mb-8">
-            <div className="w-14 h-14 bg-primary-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <span className="text-white text-xl font-bold">AF</span>
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900">Criar conta</h1>
-            <p className="text-gray-500 mt-1">Comece a usar o AgendaFácil</p>
+    <div className="min-h-screen flex">
+      {/* Left panel — desktop only */}
+      <div className="hidden lg:flex lg:w-1/2 bg-slate-900 flex-col justify-center px-16">
+        <div className="flex items-center gap-3 mb-8">
+          <CalendarCheck className="w-8 h-8 text-indigo-400" />
+          <span className="text-white font-bold text-2xl">AgendaFácil</span>
+        </div>
+        <h2 className="text-4xl font-bold text-white mb-4 leading-tight">
+          Comece a agendar<br />
+          <span className="text-indigo-400">hoje mesmo.</span>
+        </h2>
+        <p className="text-slate-400 text-lg">
+          Crie sua conta gratuitamente e acesse os melhores serviços da sua região.
+        </p>
+      </div>
+
+      {/* Right panel — form */}
+      <div className="flex-1 flex items-center justify-center bg-white px-6 py-12">
+        <div className="w-full max-w-md">
+          <div className="mb-8">
+            <h1 className="text-2xl font-bold text-slate-900">Criar conta</h1>
+            <p className="text-slate-500 mt-1">Comece a usar o AgendaFácil</p>
           </div>
 
           {/* Role selector */}
           <div className="grid grid-cols-2 gap-3 mb-6">
-            {['CLIENT', 'PROVIDER'].map((role) => (
-              <button
-                key={role}
-                type="button"
-                onClick={() => setForm({ ...form, role })}
-                className={`py-3 px-4 rounded-xl border-2 text-sm font-medium transition-all ${
-                  form.role === role
-                    ? 'border-primary-600 bg-primary-50 text-primary-700'
-                    : 'border-gray-200 text-gray-600 hover:border-gray-300'
-                }`}
-              >
-                {role === 'CLIENT' ? '👤 Sou Cliente' : '🏪 Sou Prestador'}
-              </button>
-            ))}
+            <button
+              type="button"
+              onClick={() => setForm({ ...form, role: 'CLIENT' })}
+              className={`flex items-center justify-center gap-2 py-3 px-4 rounded-xl border-2 text-sm font-medium transition-all ${
+                form.role === 'CLIENT'
+                  ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
+                  : 'border-slate-200 text-slate-600 hover:border-slate-300'
+              }`}
+            >
+              <User className="w-4 h-4" />
+              Sou Cliente
+            </button>
+            <button
+              type="button"
+              onClick={() => setForm({ ...form, role: 'PROVIDER' })}
+              className={`flex items-center justify-center gap-2 py-3 px-4 rounded-xl border-2 text-sm font-medium transition-all ${
+                form.role === 'PROVIDER'
+                  ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
+                  : 'border-slate-200 text-slate-600 hover:border-slate-300'
+              }`}
+            >
+              <Store className="w-4 h-4" />
+              Sou Prestador
+            </button>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <Input
               label="Nome completo"
+              icon={User}
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               placeholder="Seu nome"
@@ -73,6 +98,7 @@ export default function Register() {
             <Input
               label="E-mail"
               type="email"
+              icon={Mail}
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
               placeholder="seu@email.com"
@@ -81,6 +107,7 @@ export default function Register() {
             <Input
               label="Telefone"
               type="tel"
+              icon={Phone}
               value={form.phone}
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
               placeholder="(11) 99999-9999"
@@ -88,6 +115,7 @@ export default function Register() {
             <Input
               label="Senha"
               type="password"
+              icon={Lock}
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
               placeholder="Mínimo 6 caracteres"
@@ -95,13 +123,13 @@ export default function Register() {
             />
 
             {form.role === 'PROVIDER' && (
-              <div className="bg-primary-50 border border-primary-200 rounded-lg p-3 text-sm text-primary-700">
+              <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3 text-sm text-indigo-700">
                 Após o cadastro, você poderá criar seu estabelecimento e configurar seus serviços.
               </div>
             )}
 
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg">
+              <div className="bg-rose-50 border border-rose-200 text-rose-700 text-sm px-4 py-3 rounded-lg">
                 {error}
               </div>
             )}
@@ -111,9 +139,9 @@ export default function Register() {
             </Button>
           </form>
 
-          <p className="text-center text-sm text-gray-500 mt-6">
+          <p className="text-center text-sm text-slate-500 mt-6">
             Já tem conta?{' '}
-            <Link to="/login" className="text-primary-600 font-medium hover:underline">
+            <Link to="/login" className="text-indigo-600 font-medium hover:underline">
               Entrar
             </Link>
           </p>
