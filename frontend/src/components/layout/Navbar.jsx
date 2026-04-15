@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { CalendarCheck, Menu, X } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
 export default function Navbar() {
@@ -18,48 +19,43 @@ export default function Navbar() {
     { to: '/my-appointments', label: 'Meus Agendamentos' },
   ];
 
-  const providerLinks = [
-    { to: '/provider/dashboard', label: 'Dashboard' },
-    { to: '/provider/establishment', label: 'Estabelecimento' },
-    { to: '/provider/services', label: 'Serviços' },
-    { to: '/provider/schedule', label: 'Horários' },
-    { to: '/provider/appointments', label: 'Agendamentos' },
-  ];
-
   const adminLinks = [
     { to: '/establishments', label: 'Estabelecimentos' },
-    { to: '/provider/dashboard', label: 'Dashboard' },
+    { to: '/my-appointments', label: 'Meus Agendamentos' },
   ];
 
+  // Only show CLIENT/ADMIN links in the public navbar; PROVIDER uses ProviderLayout sidebar
   const links =
-    user?.role === 'PROVIDER' ? providerLinks : user?.role === 'ADMIN' ? adminLinks : clientLinks;
+    user?.role === 'ADMIN' ? adminLinks : user?.role === 'CLIENT' ? clientLinks : clientLinks;
 
   function isActive(path) {
     return location.pathname === path;
   }
 
+  const initial = user?.name?.charAt(0)?.toUpperCase() ?? '?';
+
   return (
-    <nav className="bg-white border-b border-gray-200 sticky top-0 z-40">
+    <nav className="bg-white border-b border-slate-200 sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
+          {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-              <span className="text-white text-sm font-bold">AF</span>
-            </div>
-            <span className="font-bold text-lg text-gray-900">AgendaFácil</span>
+            <CalendarCheck className="w-6 h-6 text-indigo-600" />
+            <span className="font-bold text-slate-900 text-lg">AgendaFácil</span>
           </Link>
 
-          {/* Desktop links */}
-          <div className="hidden md:flex items-center gap-1">
+          {/* Desktop nav links */}
+          <div className="hidden md:flex items-center gap-6">
             {isAuthenticated &&
+              (user?.role === 'CLIENT' || user?.role === 'ADMIN') &&
               links.map((link) => (
                 <Link
                   key={link.to}
                   to={link.to}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  className={`text-sm font-medium border-b-2 pb-0.5 transition-colors ${
                     isActive(link.to)
-                      ? 'bg-primary-50 text-primary-700'
-                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                      ? 'border-indigo-600 text-slate-900'
+                      : 'text-slate-600 hover:text-slate-900 border-transparent hover:border-indigo-600'
                   }`}
                 >
                   {link.label}
@@ -67,19 +63,16 @@ export default function Navbar() {
               ))}
           </div>
 
-          {/* Right side */}
+          {/* Desktop right side */}
           <div className="hidden md:flex items-center gap-3">
             {isAuthenticated ? (
               <>
-                <div className="text-right">
-                  <p className="text-sm font-medium text-gray-900">{user.name}</p>
-                  <p className="text-xs text-gray-500">
-                    {user.role === 'PROVIDER' ? 'Prestador' : user.role === 'ADMIN' ? 'Admin' : 'Cliente'}
-                  </p>
+                <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-sm font-semibold">
+                  {initial}
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="px-3 py-1.5 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
                 >
                   Sair
                 </button>
@@ -88,13 +81,13 @@ export default function Navbar() {
               <>
                 <Link
                   to="/login"
-                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+                  className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
                 >
                   Entrar
                 </Link>
                 <Link
                   to="/register"
-                  className="px-4 py-2 text-sm font-medium bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+                  className="bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg px-4 py-2 text-sm font-medium transition-colors"
                 >
                   Cadastrar
                 </Link>
@@ -104,52 +97,65 @@ export default function Navbar() {
 
           {/* Mobile hamburger */}
           <button
-            className="md:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100"
+            className="md:hidden p-2 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors"
             onClick={() => setMenuOpen(!menuOpen)}
+            aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'}
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              {menuOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
+            {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </div>
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="md:hidden border-t border-gray-200 bg-white px-4 py-3 space-y-1">
+        <div className="md:hidden border-t border-slate-200 bg-white px-4 py-3 space-y-1">
           {isAuthenticated ? (
             <>
-              <div className="py-2 border-b border-gray-100 mb-2">
-                <p className="text-sm font-medium text-gray-900">{user.name}</p>
-                <p className="text-xs text-gray-500">{user.email}</p>
+              <div className="flex items-center gap-3 py-2 border-b border-slate-100 mb-2">
+                <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-sm font-semibold flex-shrink-0">
+                  {initial}
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-slate-900">{user.name}</p>
+                  <p className="text-xs text-slate-500">{user.email}</p>
+                </div>
               </div>
-              {links.map((link) => (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  onClick={() => setMenuOpen(false)}
-                  className="block px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  {link.label}
-                </Link>
-              ))}
+              {(user?.role === 'CLIENT' || user?.role === 'ADMIN') &&
+                links.map((link) => (
+                  <Link
+                    key={link.to}
+                    to={link.to}
+                    onClick={() => setMenuOpen(false)}
+                    className={`block px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      isActive(link.to)
+                        ? 'bg-indigo-50 text-indigo-700'
+                        : 'text-slate-700 hover:bg-slate-100'
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
               <button
                 onClick={() => { handleLogout(); setMenuOpen(false); }}
-                className="block w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg"
+                className="block w-full text-left px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors"
               >
                 Sair
               </button>
             </>
           ) : (
             <>
-              <Link to="/login" onClick={() => setMenuOpen(false)} className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg">
+              <Link
+                to="/login"
+                onClick={() => setMenuOpen(false)}
+                className="block px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+              >
                 Entrar
               </Link>
-              <Link to="/register" onClick={() => setMenuOpen(false)} className="block px-3 py-2 text-sm bg-primary-600 text-white rounded-lg">
+              <Link
+                to="/register"
+                onClick={() => setMenuOpen(false)}
+                className="block px-3 py-2 text-sm font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+              >
                 Cadastrar
               </Link>
             </>

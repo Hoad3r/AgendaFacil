@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
 import Layout from './components/layout/Layout';
+import ProviderLayout from './components/layout/ProviderLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 
 import Home from './pages/Home';
@@ -24,13 +25,13 @@ export default function App() {
       <AuthProvider>
         <ToastProvider>
           <Routes>
+            {/* Public + Client routes */}
             <Route element={<Layout />}>
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/establishments" element={<Establishments />} />
               <Route path="/establishments/:id" element={<EstablishmentDetail />} />
-
               <Route
                 path="/booking/:establishmentId/:serviceId"
                 element={
@@ -47,7 +48,10 @@ export default function App() {
                   </ProtectedRoute>
                 }
               />
+            </Route>
 
+            {/* Provider routes */}
+            <Route element={<ProviderLayout />}>
               <Route
                 path="/provider/dashboard"
                 element={
