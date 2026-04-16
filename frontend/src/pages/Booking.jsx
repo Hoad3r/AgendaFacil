@@ -2,10 +2,13 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { ArrowLeft, Clock, CalendarDays, CheckCircle } from 'lucide-react';
 import api from '../services/api';
 import { useToast } from '../contexts/ToastContext';
 import Button from '../components/ui/Button';
 import Modal from '../components/ui/Modal';
+
+const steps = ['Serviço', 'Horário', 'Confirmação'];
 
 export default function Booking() {
   const { establishmentId, serviceId } = useParams();
@@ -61,52 +64,94 @@ export default function Booking() {
   if (!est || !service) {
     return (
       <div className="flex justify-center py-20">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary-600" />
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600" />
       </div>
     );
   }
 
+  // Determine current stepper step
+  const currentStep = selectedSlot ? 2 : date ? 1 : 0;
+
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
-      <button onClick={() => navigate(-1)} className="text-sm text-gray-500 hover:text-gray-700 mb-6 flex items-center gap-1">
-        ← Voltar
+      {/* Back button */}
+      <button
+        onClick={() => navigate(-1)}
+        className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 mb-6 transition-colors"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        Voltar
       </button>
 
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Agendar Serviço</h1>
+      <h1 className="text-2xl font-bold text-slate-900 mb-6">Agendar Serviço</h1>
+
+      {/* Stepper */}
+      <div className="flex items-center gap-2 mb-8">
+        {steps.map((step, i) => (
+          <div key={step} className="flex items-center gap-2">
+            <div className={`flex items-center gap-1.5 text-sm font-medium ${
+              i <= currentStep ? 'text-indigo-600' : 'text-slate-400'
+            }`}>
+              <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${
+                i < currentStep ? 'bg-indigo-600 text-white' :
+                i === currentStep ? 'border-2 border-indigo-600 text-indigo-600' :
+                'border-2 border-slate-300 text-slate-400'
+              }`}>{i + 1}</span>
+              {step}
+            </div>
+            {i < steps.length - 1 && (
+              <div className={`h-px w-8 ${i < currentStep ? 'bg-indigo-600' : 'bg-slate-200'}`} />
+            )}
+          </div>
+        ))}
+      </div>
 
       {/* Service card */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
-        <p className="text-sm text-gray-500 mb-1">{est.name}</p>
-        <h2 className="text-xl font-semibold text-gray-900">{service.name}</h2>
-        {service.description && <p className="text-sm text-gray-500 mt-1">{service.description}</p>}
+      <div className="bg-white rounded-2xl border border-slate-100 p-6 mb-6">
+        <p className="text-sm text-slate-500 mb-1">{est.name}</p>
+        <h2 className="text-xl font-semibold text-slate-900">{service.name}</h2>
+        {service.description && (
+          <p className="text-sm text-slate-500 mt-1">{service.description}</p>
+        )}
         <div className="flex gap-6 mt-3 text-sm">
-          <span className="text-gray-500">⏱ {service.duration} min</span>
-          <span className="font-semibold text-primary-700">R$ {Number(service.price).toFixed(2)}</span>
+          <span className="flex items-center gap-1.5 text-slate-500">
+            <Clock className="w-4 h-4" />
+            {service.duration} min
+          </span>
+          <span className="font-semibold text-indigo-700">
+            R$ {Number(service.price).toFixed(2)}
+          </span>
         </div>
       </div>
 
       {/* Date picker */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
-        <h3 className="font-semibold text-gray-900 mb-3">Escolha a data</h3>
+      <div className="bg-white rounded-2xl border border-slate-100 p-6 mb-6">
+        <h3 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
+          <CalendarDays className="w-4 h-4 text-indigo-600" />
+          Escolha a data
+        </h3>
         <input
           type="date"
           min={today}
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
       </div>
 
       {/* Time slots */}
       {date && (
-        <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Horários disponíveis</h3>
+        <div className="bg-white rounded-2xl border border-slate-100 p-6 mb-6">
+          <h3 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
+            <Clock className="w-4 h-4 text-indigo-600" />
+            Horários disponíveis
+          </h3>
           {loadingSlots ? (
             <div className="flex justify-center py-6">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-600" />
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600" />
             </div>
           ) : slots.length === 0 ? (
-            <p className="text-gray-400 text-sm text-center py-4">
+            <p className="text-slate-400 text-sm text-center py-4">
               Nenhum horário disponível para esta data
             </p>
           ) : (
@@ -117,8 +162,8 @@ export default function Booking() {
                   onClick={() => setSelectedSlot(slot)}
                   className={`py-2 rounded-lg text-sm font-medium transition-colors ${
                     selectedSlot === slot
-                      ? 'bg-primary-600 text-white'
-                      : 'bg-gray-50 text-gray-700 hover:bg-primary-50 hover:text-primary-700 border border-gray-200'
+                      ? 'bg-indigo-600 text-white'
+                      : 'bg-slate-50 text-slate-700 hover:bg-indigo-50 hover:text-indigo-700 border border-slate-200'
                   }`}
                 >
                   {slot}
@@ -131,6 +176,7 @@ export default function Booking() {
 
       {selectedSlot && (
         <Button fullWidth size="lg" onClick={() => setConfirmOpen(true)}>
+          <CheckCircle className="w-4 h-4 mr-2" />
           Confirmar Agendamento para {selectedSlot}
         </Button>
       )}
@@ -138,40 +184,42 @@ export default function Booking() {
       {/* Confirm Modal */}
       <Modal isOpen={confirmOpen} onClose={() => setConfirmOpen(false)} title="Confirmar Agendamento">
         <div className="space-y-4">
-          <div className="bg-gray-50 rounded-xl p-4 space-y-2 text-sm">
+          <div className="bg-slate-50 rounded-xl p-4 space-y-2 text-sm">
             <div className="flex justify-between">
-              <span className="text-gray-500">Estabelecimento</span>
+              <span className="text-slate-500">Estabelecimento</span>
               <span className="font-medium">{est.name}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-500">Serviço</span>
+              <span className="text-slate-500">Serviço</span>
               <span className="font-medium">{service.name}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-500">Data</span>
+              <span className="text-slate-500">Data</span>
               <span className="font-medium">{format(parseISO(date), 'dd/MM/yyyy')}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-500">Horário</span>
+              <span className="text-slate-500">Horário</span>
               <span className="font-medium">{selectedSlot}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-500">Duração</span>
+              <span className="text-slate-500">Duração</span>
               <span className="font-medium">{service.duration} min</span>
             </div>
-            <div className="flex justify-between border-t border-gray-200 pt-2">
+            <div className="flex justify-between border-t border-slate-200 pt-2">
               <span className="font-semibold">Total</span>
-              <span className="font-bold text-primary-700">R$ {Number(service.price).toFixed(2)}</span>
+              <span className="font-bold text-indigo-700">R$ {Number(service.price).toFixed(2)}</span>
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Observações (opcional)</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1">
+              Observações (opcional)
+            </label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={3}
               placeholder="Ex: preferências, informações adicionais..."
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
           <div className="flex gap-3 pt-2">
