@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { format, parseISO, isFuture } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { Calendar, Clock, CalendarX } from 'lucide-react';
 import api from '../services/api';
 import { useToast } from '../contexts/ToastContext';
 import Badge from '../components/ui/Badge';
@@ -50,9 +52,9 @@ export default function MyAppointments() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Meus Agendamentos</h1>
+      <h1 className="text-2xl font-bold text-slate-900 mb-6">Meus Agendamentos</h1>
 
-      <div className="flex gap-1 bg-gray-100 p-1 rounded-xl mb-6 w-fit">
+      <div className="flex gap-1 bg-slate-100 p-1 rounded-xl mb-6 w-fit">
         {[
           { id: 'upcoming', label: `Próximos (${upcoming.length})` },
           { id: 'history', label: `Histórico (${history.length})` },
@@ -61,7 +63,7 @@ export default function MyAppointments() {
             key={t.id}
             onClick={() => setTab(t.id)}
             className={`px-5 py-2 rounded-lg text-sm font-medium transition-colors ${
-              tab === t.id ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+              tab === t.id ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
             }`}
           >
             {t.label}
@@ -74,9 +76,15 @@ export default function MyAppointments() {
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
         </div>
       ) : shown.length === 0 ? (
-        <div className="text-center py-20 bg-white rounded-2xl border border-gray-100">
-          <div className="text-4xl mb-3">📅</div>
-          <p className="text-gray-500">Nenhum agendamento encontrado</p>
+        <div className="text-center py-20 bg-white rounded-2xl border border-slate-100 flex flex-col items-center gap-3">
+          <CalendarX className="w-12 h-12 text-slate-300" />
+          <p className="text-slate-500">Nenhum agendamento encontrado</p>
+          <Link
+            to="/establishments"
+            className="inline-flex items-center justify-center font-medium rounded-lg transition-colors bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 px-3 py-1.5 text-sm"
+          >
+            Ver estabelecimentos
+          </Link>
         </div>
       ) : (
         <div className="space-y-3">
@@ -84,22 +92,33 @@ export default function MyAppointments() {
             const dt = parseISO(appt.dateTime.replace('Z', ''));
             const canCancel = ['PENDING', 'CONFIRMED'].includes(appt.status);
             return (
-              <div key={appt.id} className="bg-white rounded-xl border border-gray-100 p-5">
+              <div key={appt.id} className="bg-white rounded-xl border border-slate-200 p-5">
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <h3 className="font-semibold text-gray-900">{appt.service?.name}</h3>
-                    <p className="text-sm text-gray-500">{appt.establishment?.name}</p>
+                    <h3 className="font-bold text-slate-900">{appt.service?.name}</h3>
+                    <p className="text-sm text-slate-500">{appt.establishment?.name}</p>
                   </div>
                   <Badge value={appt.status} />
                 </div>
-                <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-3">
-                  <span>📅 {format(dt, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}</span>
-                  <span>🕐 {format(dt, 'HH:mm')}</span>
-                  <span>⏱ {appt.service?.duration} min</span>
-                  <span className="font-medium text-gray-900">R$ {Number(appt.service?.price).toFixed(2)}</span>
+                <div className="flex flex-wrap gap-4 text-sm text-slate-500 mb-3">
+                  <span className="flex items-center gap-1">
+                    <Calendar className="w-4 h-4" />
+                    {format(dt, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Clock className="w-4 h-4" />
+                    {format(dt, 'HH:mm')}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Clock className="w-4 h-4" />
+                    {appt.service?.duration} min
+                  </span>
+                  <span className="font-semibold text-slate-900">
+                    R$ {Number(appt.service?.price).toFixed(2)}
+                  </span>
                 </div>
                 {appt.notes && (
-                  <p className="text-sm text-gray-400 italic mb-3">"{appt.notes}"</p>
+                  <p className="text-sm text-slate-400 italic mb-3">"{appt.notes}"</p>
                 )}
                 {canCancel && (
                   <Button variant="danger" size="sm" onClick={() => setCancelTarget(appt)}>
@@ -113,7 +132,7 @@ export default function MyAppointments() {
       )}
 
       <Modal isOpen={!!cancelTarget} onClose={() => setCancelTarget(null)} title="Cancelar Agendamento" size="sm">
-        <p className="text-gray-600 mb-6">
+        <p className="text-slate-600 mb-6">
           Tem certeza que deseja cancelar o agendamento de{' '}
           <strong>{cancelTarget?.service?.name}</strong>?
         </p>
