@@ -195,7 +195,7 @@ export default function Booking() {
             </div>
             <div className="flex justify-between">
               <span className="text-slate-500">Data</span>
-              <span className="font-medium">{format(parseISO(date), 'dd/MM/yyyy')}</span>
+              <span className="font-medium">{date ? format(parseISO(date), 'dd/MM/yyyy') : '-'}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-500">Horário</span>
