@@ -84,8 +84,8 @@ export default function ProviderSchedule() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-gray-900 mb-2">Horários de Funcionamento</h1>
-      <p className="text-gray-500 mb-6">Configure os dias e horários em que você atende</p>
+      <h1 className="text-2xl font-bold text-slate-900 mb-2">Horários de Funcionamento</h1>
+      <p className="text-slate-500 mb-6">Configure os dias e horários em que você atende</p>
 
       {establishments.length > 1 && (
         <Select
@@ -105,20 +105,20 @@ export default function ProviderSchedule() {
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden mb-6">
+        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden mb-6">
           {hours.map((h, idx) => (
             <div
               key={h.dayOfWeek}
-              className={`flex items-center gap-4 px-6 py-4 ${idx < hours.length - 1 ? 'border-b border-gray-100' : ''}`}
+              className={`flex items-center gap-4 px-6 py-4 ${idx < hours.length - 1 ? 'border-b border-slate-100' : ''}`}
             >
               <label className="flex items-center gap-3 w-40 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={h.active}
                   onChange={(e) => update(h.dayOfWeek, 'active', e.target.checked)}
-                  className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                  className="rounded border-slate-300 text-primary-600 focus:ring-primary-500"
                 />
-                <span className={`text-sm font-medium ${h.active ? 'text-gray-900' : 'text-gray-400'}`}>
+                <span className={`text-sm font-medium ${h.active ? 'text-slate-900' : 'text-slate-400'}`}>
                   {days[h.dayOfWeek].label}
                 </span>
               </label>
@@ -129,18 +129,18 @@ export default function ProviderSchedule() {
                     type="time"
                     value={h.startTime}
                     onChange={(e) => update(h.dayOfWeek, 'startTime', e.target.value)}
-                    className="border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="border border-slate-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
                   />
-                  <span className="text-gray-400 text-sm">até</span>
+                  <span className="text-slate-400 text-sm">até</span>
                   <input
                     type="time"
                     value={h.endTime}
                     onChange={(e) => update(h.dayOfWeek, 'endTime', e.target.value)}
-                    className="border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="border border-slate-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
                   />
                 </div>
               ) : (
-                <span className="text-sm text-gray-400 flex-1">Fechado</span>
+                <span className="text-sm text-slate-400 flex-1">Fechado</span>
               )}
             </div>
           ))}

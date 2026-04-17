@@ -1,4 +1,8 @@
 import { useState, useEffect } from 'react';
+import {
+  Plus, Store, Pencil, Trash2, MapPin, Phone, Wrench,
+  Scissors, PawPrint, Stethoscope, Star,
+} from 'lucide-react';
 import api from '../../services/api';
 import { useToast } from '../../contexts/ToastContext';
 import Button from '../../components/ui/Button';
@@ -13,6 +17,15 @@ const CATEGORIES = [
   { value: 'CLINIC', label: 'Clínica' },
   { value: 'OTHER', label: 'Outro' },
 ];
+
+const categoryIcons = { SALON: Scissors, PETSHOP: PawPrint, CLINIC: Stethoscope, OTHER: Store };
+
+const categoryColors = {
+  SALON: 'bg-gradient-to-r from-pink-500 to-rose-400',
+  PETSHOP: 'bg-gradient-to-r from-orange-500 to-amber-400',
+  CLINIC: 'bg-gradient-to-r from-teal-500 to-cyan-400',
+  OTHER: 'bg-gradient-to-r from-violet-500 to-purple-400',
+};
 
 const emptyForm = {
   name: '',
@@ -111,10 +124,16 @@ export default function ProviderEstablishment() {
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Meus Estabelecimentos</h1>
-          <p className="text-sm text-gray-500 mt-1">Gerencie as informações dos seus estabelecimentos</p>
+          <h1 className="text-2xl font-bold text-slate-900">Meus Estabelecimentos</h1>
+          <p className="text-sm text-slate-500 mt-1">Gerencie as informações dos seus estabelecimentos</p>
         </div>
-        <Button onClick={openCreate}>+ Novo Estabelecimento</Button>
+        <button
+          onClick={openCreate}
+          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 transition-colors"
+        >
+          <Plus className="w-4 h-4" />
+          Novo Estabelecimento
+        </button>
       </div>
 
       {loading ? (
@@ -122,55 +141,74 @@ export default function ProviderEstablishment() {
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
         </div>
       ) : establishments.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
-          <p className="text-4xl mb-3">🏪</p>
-          <p className="text-gray-700 font-medium mb-1">Nenhum estabelecimento cadastrado</p>
-          <p className="text-gray-400 text-sm mb-6">Crie seu estabelecimento para começar a receber agendamentos</p>
-          <Button onClick={openCreate}>Criar Estabelecimento</Button>
+        <div className="text-center py-16 bg-white rounded-2xl border border-slate-200">
+          <Store className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+          <p className="text-slate-700 font-medium mb-1">Nenhum estabelecimento cadastrado</p>
+          <p className="text-slate-400 text-sm mb-6">Crie seu estabelecimento para começar a receber agendamentos</p>
+          <button
+            onClick={openCreate}
+            className="px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 transition-colors"
+          >
+            Criar Estabelecimento
+          </button>
         </div>
       ) : (
         <div className="space-y-4">
-          {establishments.map((est) => (
-            <div
-              key={est.id}
-              className="bg-white rounded-2xl border border-gray-100 p-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4"
-            >
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-3 mb-2 flex-wrap">
-                  <h2 className="text-lg font-semibold text-gray-900">{est.name}</h2>
-                  <Badge value={est.category} />
-                </div>
-                {est.description && (
-                  <p className="text-sm text-gray-600 mb-2">{est.description}</p>
-                )}
-                <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-500">
-                  {est.address && (
-                    <span className="flex items-center gap-1">
-                      <span>📍</span> {est.address}
-                    </span>
-                  )}
-                  {est.phone && (
-                    <span className="flex items-center gap-1">
-                      <span>📞</span> {est.phone}
-                    </span>
-                  )}
-                  {est._count?.services !== undefined && (
-                    <span className="flex items-center gap-1">
-                      <span>🛠</span> {est._count.services} serviço{est._count.services !== 1 ? 's' : ''}
-                    </span>
-                  )}
+          {establishments.map((est) => {
+            const Icon = categoryIcons[est.category] || Store;
+            return (
+              <div key={est.id} className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+                <div className={`h-1.5 ${categoryColors[est.category] || 'bg-slate-200'}`} />
+                <div className="p-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                  <div className="flex items-start gap-4 flex-1 min-w-0">
+                    <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center flex-shrink-0">
+                      <Icon className="w-5 h-5 text-indigo-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        <h2 className="text-lg font-semibold text-slate-900">{est.name}</h2>
+                        <Badge value={est.category} />
+                      </div>
+                      {est.description && <p className="text-sm text-slate-600 mb-2">{est.description}</p>}
+                      <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-500">
+                        {est.address && (
+                          <span className="flex items-center gap-1">
+                            <MapPin className="w-3.5 h-3.5" />{est.address}
+                          </span>
+                        )}
+                        {est.phone && (
+                          <span className="flex items-center gap-1">
+                            <Phone className="w-3.5 h-3.5" />{est.phone}
+                          </span>
+                        )}
+                        {est._count?.services !== undefined && (
+                          <span className="flex items-center gap-1">
+                            <Wrench className="w-3.5 h-3.5" />{est._count.services} serviço{est._count.services !== 1 ? 's' : ''}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 shrink-0">
+                    <button
+                      onClick={() => openEdit(est)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-sm border border-slate-200 rounded-lg text-slate-700 hover:bg-slate-50 transition-colors"
+                    >
+                      <Pencil className="w-3.5 h-3.5" />
+                      Editar
+                    </button>
+                    <button
+                      onClick={() => setDeleteModal(est)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-sm border border-rose-200 rounded-lg text-rose-600 hover:bg-rose-50 transition-colors"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      Excluir
+                    </button>
+                  </div>
                 </div>
               </div>
-              <div className="flex gap-2 shrink-0">
-                <Button variant="secondary" size="sm" onClick={() => openEdit(est)}>
-                  Editar
-                </Button>
-                <Button variant="danger" size="sm" onClick={() => setDeleteModal(est)}>
-                  Excluir
-                </Button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
@@ -181,6 +219,7 @@ export default function ProviderEstablishment() {
         title={editing ? 'Editar Estabelecimento' : 'Novo Estabelecimento'}
       >
         <form onSubmit={handleSave} className="space-y-4">
+          <p className="text-sm font-semibold text-slate-700 mb-3">Dados básicos</p>
           <Input
             label="Nome do estabelecimento"
             value={form.name}
@@ -228,12 +267,14 @@ export default function ProviderEstablishment() {
         onClose={() => setDeleteModal(null)}
         title="Excluir Estabelecimento"
       >
-        <p className="text-gray-600 mb-2">
-          Tem certeza que deseja excluir <strong>{deleteModal?.name}</strong>?
-        </p>
-        <p className="text-sm text-red-600 mb-6">
-          Esta ação é irreversível e removerá todos os serviços e horários associados.
-        </p>
+        <div className="bg-rose-50 border border-rose-200 text-rose-700 rounded-lg px-4 py-3 mb-4 text-sm">
+          <p className="font-medium mb-1">
+            Tem certeza que deseja excluir <strong>{deleteModal?.name}</strong>?
+          </p>
+          <p>
+            Esta ação é irreversível e removerá todos os serviços e horários associados.
+          </p>
+        </div>
         <div className="flex gap-3">
           <Button variant="secondary" fullWidth onClick={() => setDeleteModal(null)}>
             Cancelar
