@@ -92,7 +92,7 @@ export default function ProviderDashboard() {
         </div>
         {loading ? (
           <div className="flex justify-center py-10">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-600" />
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600" />
           </div>
         ) : todayAppts.length === 0 ? (
           <div className="text-center py-10">

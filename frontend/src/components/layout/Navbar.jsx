@@ -81,7 +81,7 @@ export default function Navbar() {
               <>
                 <Link
                   to="/login"
-                  className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
+                  className="px-4 py-2 text-sm font-medium text-slate-700 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
                 >
                   Entrar
                 </Link>

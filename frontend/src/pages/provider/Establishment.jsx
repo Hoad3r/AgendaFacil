@@ -138,7 +138,7 @@ export default function ProviderEstablishment() {
 
       {loading ? (
         <div className="flex justify-center py-16">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
         </div>
       ) : establishments.length === 0 ? (
         <div className="text-center py-16 bg-white rounded-2xl border border-slate-200">

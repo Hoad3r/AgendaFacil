@@ -9,7 +9,7 @@ export default function Layout() {
       <main className="flex-1">
         <Outlet />
       </main>
-      <footer className="bg-slate-900 text-slate-400">
+      <footer className="bg-slate-900 text-slate-400 border-t border-slate-800">
         <div className="max-w-7xl mx-auto px-4 py-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Col 1: Logo + tagline */}

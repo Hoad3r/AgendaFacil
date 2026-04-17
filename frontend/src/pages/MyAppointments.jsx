@@ -27,11 +27,18 @@ export default function MyAppointments() {
   const upcoming = appointments.filter(
     (a) => ['PENDING', 'CONFIRMED'].includes(a.status) && isFuture(parseISO(a.dateTime.replace('Z', '')))
   );
-  const history = appointments.filter(
-    (a) => ['COMPLETED', 'CANCELLED'].includes(a.status) || !isFuture(parseISO(a.dateTime.replace('Z', '')))
+  const past = appointments.filter(
+    (a) => a.status === 'COMPLETED' || (!isFuture(parseISO(a.dateTime.replace('Z', ''))) && a.status !== 'CANCELLED')
   );
+  const cancelled = appointments.filter((a) => a.status === 'CANCELLED');
 
-  const shown = tab === 'upcoming' ? upcoming : history;
+  const tabs = [
+    { id: 'upcoming', label: `Próximos (${upcoming.length})` },
+    { id: 'past', label: `Passados (${past.length})` },
+    { id: 'cancelled', label: `Cancelados (${cancelled.length})` },
+  ];
+
+  const shown = tab === 'upcoming' ? upcoming : tab === 'past' ? past : cancelled;
 
   async function handleCancel() {
     if (!cancelTarget) return;
@@ -55,10 +62,7 @@ export default function MyAppointments() {
       <h1 className="text-2xl font-bold text-slate-900 mb-6">Meus Agendamentos</h1>
 
       <div className="flex gap-1 bg-slate-100 p-1 rounded-xl mb-6 w-fit">
-        {[
-          { id: 'upcoming', label: `Próximos (${upcoming.length})` },
-          { id: 'history', label: `Histórico (${history.length})` },
-        ].map((t) => (
+        {tabs.map((t) => (
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
@@ -73,7 +77,7 @@ export default function MyAppointments() {
 
       {loading ? (
         <div className="flex justify-center py-20">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
         </div>
       ) : shown.length === 0 ? (
         <div className="text-center py-20 bg-white rounded-2xl border border-slate-100 flex flex-col items-center gap-3">
